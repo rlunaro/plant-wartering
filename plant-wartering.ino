@@ -14,10 +14,10 @@ const int offsetA = 1;
 
 // Motor: pins for all inputs, 
 // keep in mind the PWM defines must be on PWM pins
-#define PWMA 2
-#define AIN2 3
-#define AIN1 4
-#define STBY 5
+const int PWMA = 2;
+const int AIN2 = 3;
+const int AIN1 = 4;
+const int STBY = 5;
 
 // Moisture sensor: what values are considered
 // dry and what values are considered wet
@@ -46,13 +46,7 @@ const int offsetA = 1;
 #define DRY_VALUE 800
 #define WET_VALUE 550
 
-/*
- * configuration dips
- */
-#define SW1 12
-#define SW2 11
-#define SW3 10
-#define SW4 9
+const int BUTTON_PIN = 2;
 
 int moistureModes[4] = { 700, 680, 660, 640 };
 // the larger the pot, more seconds it will need 
@@ -65,48 +59,31 @@ int readMoisture( int sensorNumber ){
   return analogRead(A0);
 }
 
+volatile long int pressed = 0L;
 
-int readPinValues( int s1, int s2 ){
-  int v1 = digitalRead(s1) == LOW ? 1 : 0;
-  int v2 = digitalRead(s2) == LOW ? 1 : 0;
-
-  return (v2 << 1) | v1;
+void onButtonPressed() {
+  //estadoBoton = digitalRead(PIN_BOTON);
+  pressed++;
 }
 
 void setup() {
   Serial.begin(115200);
   Serial.println("Nano watering system");
-  // Configure pins
-  pinMode(SW1, INPUT_PULLUP);
-  pinMode(SW2, INPUT_PULLUP);
-  pinMode(SW3, INPUT_PULLUP);
-  pinMode(SW4, INPUT_PULLUP);
+  pinMode(BUTTON_PIN, INPUT_PULLUP);
+  attachInterrupt(
+      digitalPinToInterrupt(BUTTON_PIN),
+      onButtonPressed,
+      CHANGE
+    );  
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   Serial.println("loop....");
   int moistureReading = readMoisture(MOISTURE_SENSOR);
-  int wateringMode = readPinValues( SW1, SW2 );
-  if( moistureReading > moistureModes[wateringMode] ){
-    int secondsToWater = wateringSeconds[readPinValues( SW3, SW4 )]; 
-    Serial.print("Because the moisture reading is ");
-    Serial.print( moistureReading );
-    Serial.print(" and the desired humidity is ");
-    Serial.print( moistureModes[wateringMode] );
-    Serial.print( " we are firing the watering for " );
-    Serial.print(secondsToWater);
-    Serial.println(" seconds");
-    motor1.drive(100, secondsToWater * 1000 );
-    motor1.brake();
-  }else{
-    Serial.print("No need to water. Moisture: ");
-    Serial.println( moistureReading );
-    Serial.print("Desired humidity: ");
-    Serial.println( moistureModes[wateringMode] );    
-  }
   // FORDEBUG
-  delay(3000);
+  delay(5000);
   //delay( 3600 * 1000 );
 }
+
 
