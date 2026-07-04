@@ -25,12 +25,9 @@ const int offsetA = 1;
  Moisture sensor
 
  Some values: 
-
-  - sensor on air: 840
-  - sensor on somewhat wet sand: 818
-  - sensor on wet ground: 530
-  - sensor on very wet sand: 570
-  - sensor on very much wet ground: 550 
+  - on air: 630
+  - dry sand: 547
+  - wet sand: 308
 
   Let's say that, on average, these are the values we are going 
   to use to say that a given plan has this soil dry or 
@@ -54,7 +51,8 @@ const int offsetA = 1;
 #define SW3 10
 #define SW4 9
 
-int moistureModes[4] = { 700, 680, 660, 640 };
+// 0 - the most dry, 3 - the most humid
+int moistureModes[4] = { 600, 534, 466, 400 };
 // the larger the pot, more seconds it will need 
 // to properly water it
 int wateringSeconds[4] = {2, 4, 8, 16};
